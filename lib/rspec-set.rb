@@ -15,28 +15,17 @@ module RSpec
         #
         def set(variable_name, &block)
           before(:all) do
-            # Create model
-            self.class.send(:class_variable_set, "@@__rspec_set_#{variable_name}".to_sym, instance_eval(&block))
+            self.class.send(:class_variable_set, "@@#{variable_name}".to_sym, instance_eval(&block))
           end
 
-          before(:each) do
-            model = send(variable_name)
-
-            if model.is_a?(ActiveRecord::Base)
-              if model.destroyed?
-                # Relig destroyed model
-                model.class.find(i.id)
-              elsif !model.new_record?
-                # Reload saved model
-                model.reload
-              end
+          let(variable_name) do
+            variable = self.class.send(:class_variable_get, "@@#{variable_name}".to_sym)
+            if variable.new_record?
+              # TODO: try deep_clone if it didn't work correctly
+              variable.dup
             else
-              warn "rspec-set works with ActiveRecord models only"
+              variable.respond_to?(:reload) ? variable.reload : variable
             end
-          end
-
-          let(variable_name) do 
-            self.class.send(:class_variable_get, "@@__rspec_set_#{variable_name}".to_sym)
           end
         end # set()
 

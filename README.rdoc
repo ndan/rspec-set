@@ -55,7 +55,7 @@ You can find more examples in https://github.com/pcreux/rspec-set/blob/master/fe
 
 Add rspec-set to you Gemfile
 
-  gem 'rspec-set'
+  gem 'rspec-set', :git => "git://github.com/ndan/rspec-set.git"
 
 and replace calls to <tt>#let</tt> creating active record objects by <tt>#set</tt>.
 
